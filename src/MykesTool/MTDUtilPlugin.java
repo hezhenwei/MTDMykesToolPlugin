@@ -8,6 +8,7 @@ import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
 import mindustry.net.Administration.*;
+import mindustry.world.Tile;
 import mindustry.world.blocks.storage.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -129,7 +130,26 @@ public class MTDUtilPlugin extends Plugin{
 
         Events.on(PlayEvent.class, event ->{
             // burn extra resource.
-           Vars.state.rules.coreIncinerates = true;
+            Vars.state.rules.coreIncinerates = true;
+
+            for(Tile t:Vars.world.tiles)
+            {
+                if(t.block().buildType == Blocks.itemSource)
+                {
+                    Log.info(("disable itemSource"));
+                    t.block().breakable = false;
+                }
+                if(t.block().buildType == Blocks.powerSource)
+                {
+                    Log.info(("disable powerSource"));
+                    t.block().breakable = false;
+                }
+                if(t.block().buildType == Blocks.liquidSource)
+                {
+                    Log.info(("disable liquidSource"));
+                    t.block().breakable = false;
+                }
+            }
         });
     }
 
