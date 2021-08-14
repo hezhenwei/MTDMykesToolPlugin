@@ -47,7 +47,7 @@ public class MTDMykesToolPlugin extends Plugin{
                 }
             } while (line!=null);
             //System.out.println("[MTDDirtyWordMask] Read " + Integer.toString(nCount) + " words.");
-            Log.info("[MTDDirtyWordMask] Read " + Integer.toString(nCount) + " words.");
+            Log.info("[MTDDirtyWordMask] Read " + nCount + " words.");
             try {
                 br.close();
                 fr.close();
@@ -62,13 +62,17 @@ public class MTDMykesToolPlugin extends Plugin{
                 Log.info("[MTDDirtyWordMask] Create " +strFileName + " to store dirty phrases.");
             } catch (Exception e) {
                 //System.out.println("[MTDDirtyWordMask] Create " +strFileName + " failed" + e.toString());
-                Log.info("[MTDDirtyWordMask] Error! Create " +strFileName + " failed" + e.toString());
+                Log.info("[MTDDirtyWordMask] Error! Create " +strFileName + " failed" + e);
             }
         }
     }
     //called when game initializes
     @Override
     public void init(){
+        Log.info("MykesH Mindustry MTD Plugin");
+        Log.info("1.屏蔽脏字 Mask dirty words");
+        Log.info("2.禁止拆卸物品源/液体源/电力源 not allow to break infinit sources");
+        Log.info("3.自动燃烧额外资源 Allow burn extra resource discard map config");
         /*
         //listen for a block selection event
         Events.on(BuildSelectEvent.class, event -> {
@@ -82,9 +86,10 @@ public class MTDMykesToolPlugin extends Plugin{
         });
         */
 
+        // dirty words mask functions.
         this.reloadWords();
-        //add a chat filter that changes the contents of all messages
-        //in this case, all instances of "heck" are censored
+
+        // dirty words mask functions.
         Vars.netServer.admins.addChatFilter((player, text) -> {
             int size = arrayDirtyWords.length;
             for (String strToReplace : arrayDirtyWords) {
@@ -97,7 +102,7 @@ public class MTDMykesToolPlugin extends Plugin{
             }
                 for (String strToReplace : ListDirtyWordsExt) {
                     int nPhraseLength = strToReplace.length();
-                    StringBuffer sb=new StringBuffer();
+                    StringBuilder sb=new StringBuilder();
                     for(int j=0;j<nPhraseLength;j++) {
                         sb.append("*");
                     }
@@ -106,45 +111,32 @@ public class MTDMykesToolPlugin extends Plugin{
             //player.sendMessage("try to do something for v008");
             return text;
         });
+
         //Vars.netServer.admins.addChatFilter((player, text) -> text.replace("111", "****"));
 
         Vars.netServer.admins.addActionFilter(action -> {
             // not allow to break any kind of source
             if(action.type == ActionType.breakBlock &&
                     ( action.block == Blocks.itemSource ||
-                            action.block == Blocks.liquidSource ||
-                            action.block == Blocks.powerSource) )
+                      action.block == Blocks.liquidSource ||
+                      action.block == Blocks.powerSource) )
             {
                 action.player.sendMessage("禁止拆卸物品源/液体源/电力源 Breaking source not allowed.");
                 return false;
             }
             return true;
         });
-    }
 
-    //register commands that run on the server
-    /* // sample
-    @Override
-    public void registerServerCommands(CommandHandler handler){
-        handler.register("reloadwordmask", "Reload word mask in config/DirtyWords.txt.", args -> {
-            for(int x = 0; x < Vars.world.width(); x++){
-                for(int y = 0; y < Vars.world.height(); y++){
-                    //loop through and log all found reactors
-                    //make sure to only log reactor centers
-                    if(Vars.world.tile(x, y).block() == Blocks.thoriumReactor && Vars.world.tile(x, y).isCenter()){
-                        Log.info("Reactor at @, @", x, y);
-                    }
-                }
-            }
+        Events.on(PlayEvent.class, event ->{
+            // burn extra resource.
+           Vars.state.rules.coreIncinerates = true;
         });
     }
-    */
+
 
     @Override
     public void registerServerCommands(CommandHandler handler){
-        handler.register("reloadwordmask", "Reload word mask in config/DirtyWords.txt.", args -> {
-            this.reloadWords();
-        });
+        handler.register("reloadwordmask", "Reload word mask in config/DirtyWords.txt.", args -> this.reloadWords());
     }
 
     /*
