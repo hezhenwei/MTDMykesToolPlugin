@@ -1,7 +1,7 @@
 {
-  "name": "MTDMykesToolPlugin",
+  "name": "MykesTool.MTDUtilPlugin",
   "author": "Myke.H",
-  "main": "MykesTool.MTDMykesToolPlugin",
+  "main": "MykesTool.MTDUtilPlugin",
   "description": "Some useful functions",
-  "version": "0.1.0"
+  "version": "0.1.2"
 }

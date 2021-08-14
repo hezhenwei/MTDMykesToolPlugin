@@ -13,11 +13,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MTDMykesToolPlugin extends Plugin{
+public class MTDUtilPlugin extends Plugin{
 
     private String[] arrayDirtyWords = DirtyWords.GetDefaultWords();
     private List<String> ListDirtyWordsExt = new ArrayList<>();
-
+    private final String m_strLogPrefix = "[MykesTool] ";
     private void reloadWords()
     {
         ListDirtyWordsExt.clear();
@@ -30,7 +30,7 @@ public class MTDMykesToolPlugin extends Plugin{
         }
         if (fr != null) {
            //System.out.println("[MTDDirtyWordMask] Reading word mask configs.");
-            Log.info("[MTDDirtyWordMask] Reading word mask configs.");
+            Log.info(m_strLogPrefix+ "Reading word mask configs.");
             BufferedReader br=new BufferedReader(fr);
             String line="";
             int nCount = 0;
@@ -47,7 +47,7 @@ public class MTDMykesToolPlugin extends Plugin{
                 }
             } while (line!=null);
             //System.out.println("[MTDDirtyWordMask] Read " + Integer.toString(nCount) + " words.");
-            Log.info("[MTDDirtyWordMask] Read " + nCount + " words.");
+            Log.info(m_strLogPrefix+"Read " + nCount + " words.");
             try {
                 br.close();
                 fr.close();
@@ -59,10 +59,10 @@ public class MTDMykesToolPlugin extends Plugin{
                 File f1 = new File(strFileName);
                 f1.createNewFile();
                 //System.out.println("[MTDDirtyWordMask] Create " +strFileName + " to store dirty phrases.");
-                Log.info("[MTDDirtyWordMask] Create " +strFileName + " to store dirty phrases.");
+                Log.info(m_strLogPrefix + "Create " +strFileName + " to store dirty phrases.");
             } catch (Exception e) {
                 //System.out.println("[MTDDirtyWordMask] Create " +strFileName + " failed" + e.toString());
-                Log.info("[MTDDirtyWordMask] Error! Create " +strFileName + " failed" + e);
+                Log.info(m_strLogPrefix + "Error! Create " +strFileName + " failed" + e);
             }
         }
     }
@@ -121,7 +121,7 @@ public class MTDMykesToolPlugin extends Plugin{
                       action.block == Blocks.liquidSource ||
                       action.block == Blocks.powerSource) )
             {
-                action.player.sendMessage("禁止拆卸物品源/液体源/电力源 Breaking source not allowed.");
+                action.player.sendMessage(m_strLogPrefix + "禁止拆卸物品源/液体源/电力源 Breaking source not allowed.");
                 return false;
             }
             return true;
