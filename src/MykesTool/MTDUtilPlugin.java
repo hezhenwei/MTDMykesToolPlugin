@@ -5,6 +5,7 @@ import arc.util.*;
 import mindustry.*;
 import mindustry.content.*;
 import mindustry.game.EventType.*;
+import mindustry.game.Gamemode;
 import mindustry.gen.*;
 import mindustry.mod.*;
 import mindustry.net.Administration.*;
@@ -117,7 +118,8 @@ public class MTDUtilPlugin extends Plugin{
 
         Vars.netServer.admins.addActionFilter(action -> {
             // not allow to break any kind of source
-            if(action.type == ActionType.breakBlock &&
+            if( Vars.state.rules.mode() != Gamemode.sandbox &&
+                    action.type == ActionType.breakBlock &&
                     ( action.block == Blocks.itemSource ||
                       action.block == Blocks.liquidSource ||
                       action.block == Blocks.powerSource) )
@@ -150,6 +152,10 @@ public class MTDUtilPlugin extends Plugin{
                     t.block().breakable = false;
                 }
             }
+            // all kinds of source cannot be hit and destruct by enemy.
+            Blocks.itemSource.destructible = false;
+            Blocks.liquidSource.destructible = false;
+            Blocks.powerSource.destructible = false;
         });
     }
 

@@ -5,6 +5,7 @@ Used in Mindustry Server side.<br />
 MykesH Mindustry MTD Plugin <br />
 1.屏蔽脏字 Mask dirty words<br />
 2.禁止拆卸物品源/液体源/电力源 not allow to break infinit sources<br />
+并且不会被敌人打掉。Cannot be hit by enemy<br />
 3.自动燃烧额外资源 Allow burn extra resource discard map config<br />
 ### Installing
 
