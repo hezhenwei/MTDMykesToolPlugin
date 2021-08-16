@@ -156,6 +156,10 @@ public class MTDUtilPlugin extends Plugin{
             Blocks.itemSource.destructible = false;
             Blocks.liquidSource.destructible = false;
             Blocks.powerSource.destructible = false;
+            // all kinds of source cannot be replaced.
+            Blocks.itemSource.replaceable = false;
+            Blocks.liquidSource.replaceable = false;
+            Blocks.powerSource.replaceable = false;
         });
     }
 
