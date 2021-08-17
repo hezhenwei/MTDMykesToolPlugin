@@ -8,6 +8,7 @@ MykesH Mindustry MTD Plugin <br />
 并且不会被敌人打掉。Cannot be hit by enemy<br />
 并且不会其他建筑替换。Cannot be replace by other building<br />
 3.自动燃烧额外资源 Allow burn extra resource discard map config<br />
+4.敌人超过800自动干掉。Kill random enemy unit if their number is over 800.
 ### Installing
 
 Simply place the .jar file

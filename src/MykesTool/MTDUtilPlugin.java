@@ -1,14 +1,18 @@
 package MykesTool;
 
 import arc.*;
+import arc.math.Mathf;
 import arc.util.*;
 import mindustry.*;
 import mindustry.content.*;
 import mindustry.game.EventType.*;
 import mindustry.game.Gamemode;
+import mindustry.game.Team;
+import mindustry.game.Teams;
 import mindustry.gen.*;
 import mindustry.mod.*;
 import mindustry.net.Administration.*;
+import mindustry.type.UnitType;
 import mindustry.world.Tile;
 import mindustry.world.blocks.storage.*;
 import java.io.*;
@@ -68,6 +72,49 @@ public class MTDUtilPlugin extends Plugin{
             }
         }
     }
+
+    //time task per sec
+    public void TimeTask()
+    {
+        // check if enemy unit count
+        if(Vars.state.rules.mode() != Gamemode.pvp)
+        {
+            int nTotalUnits = 0;
+            for(Team it: Team.all )
+            {
+                if( it != Team.sharded) {
+                    nTotalUnits += it.data().units.size;
+                }
+            }
+            int nOurUnits = Team.sharded.data().units.size;
+            int nTotalEnemy = nTotalUnits - nOurUnits;
+            //Log.info("Total "+ nTotalUnits + " enemy "+nTotalEnemy);
+            if( nTotalEnemy > 800)
+            {
+                int nToKill = nTotalEnemy - 780;
+                Call.sendMessage("敌人人数超过800，可能造成卡顿，随机杀掉敌人单位");
+                for(int i=0;i<nToKill;)
+                {
+                    for(Team it: Team.all )
+                    {
+                        //Log.info("Try team" + it);
+                        if( it != Team.sharded && it.data().units.size > 0) {
+                            Unit u = it.data().units.random();
+                            if ( u != null) {
+                                //Log.info("Killing "+ u);
+                                u.kill();
+                                ++i; // it may stuck the system when enemy count significantly drop. but it will not happen. i think.
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        // end of check enemy count
+
+        Time.runTask(60f, ()-> TimeTask());
+    }
+
     //called when game initializes
     @Override
     public void init(){
@@ -87,6 +134,9 @@ public class MTDUtilPlugin extends Plugin{
             }
         });
         */
+
+        // register time.
+        Time.runTask(60f, ()-> TimeTask());
 
         // dirty words mask functions.
         this.reloadWords();
@@ -161,6 +211,7 @@ public class MTDUtilPlugin extends Plugin{
             Blocks.liquidSource.replaceable = false;
             Blocks.powerSource.replaceable = false;
         });
+
     }
 
 
