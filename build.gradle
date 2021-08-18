@@ -1,6 +1,6 @@
 apply plugin: "java"
 
-version '0.1.5'
+version '0.1.6'
 
 sourceCompatibility = 1.8
 
@@ -24,6 +24,20 @@ dependencies{
     compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
 }
 
+task Hello{
+    doLast {
+        println "Hello"
+    }
+}
+
+task myCopy1(type: Copy){
+    from 'build\\libs'
+    into 'I:\\mindustry\\mindustry-server-unstable130\\config\\mods'
+    include "MykesTool_MTDUtilPlugin-${project.version}.jar"
+    dependsOn("jar")
+}
+
+defaultTasks "jar", "Hello", "myCopy1"
 
 jar{
     //mustRunAfter = "classes"

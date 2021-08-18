@@ -202,10 +202,13 @@ public class MTDUtilPlugin extends Plugin{
                     t.block().breakable = false;
                 }
             }
+
             // all kinds of source cannot be hit and destruct by enemy.
-            Blocks.itemSource.destructible = false;
-            Blocks.liquidSource.destructible = false;
-            Blocks.powerSource.destructible = false;
+            // remove these code because enemy's source now cannot be destructed too...
+            //Blocks.itemSource.destructible = false;
+            //Blocks.liquidSource.destructible = false;
+            //Blocks.powerSource.destructible = false;
+
             // all kinds of source cannot be replaced.
             Blocks.itemSource.replaceable = false;
             Blocks.liquidSource.replaceable = false;
