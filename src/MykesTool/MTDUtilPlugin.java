@@ -2,9 +2,12 @@ package MykesTool;
 
 import arc.*;
 import arc.math.Mathf;
+import arc.math.geom.Geometry;
+import arc.math.geom.Point2;
 import arc.util.*;
 import mindustry.*;
 import mindustry.content.*;
+import mindustry.game.EventType;
 import mindustry.game.EventType.*;
 import mindustry.game.Gamemode;
 import mindustry.game.Team;
@@ -13,6 +16,7 @@ import mindustry.gen.*;
 import mindustry.mod.*;
 import mindustry.net.Administration.*;
 import mindustry.type.UnitType;
+import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.storage.*;
 import java.io.*;
@@ -74,43 +78,42 @@ public class MTDUtilPlugin extends Plugin{
     }
 
     //time task per sec
+    int nTimeCount = 0;
     public void TimeTask()
     {
         // check if enemy unit count
-        if(Vars.state.rules.mode() != Gamemode.pvp)
-        {
-            int nTotalUnits = 0;
-            for(Team it: Team.all )
-            {
-                if( it != Team.sharded) {
-                    nTotalUnits += it.data().units.size;
+        nTimeCount++;
+        if( nTimeCount%5 == 0) { // do it every 5 sec.
+            if (Vars.state.rules.mode() != Gamemode.pvp) {
+                int nTotalUnits = 0;
+                for (Team it : Team.all) {
+                    if (it != Team.sharded) {
+                        nTotalUnits += it.data().units.size;
+                    }
                 }
-            }
-            int nOurUnits = Team.sharded.data().units.size;
-            int nTotalEnemy = nTotalUnits - nOurUnits;
-            //Log.info("Total "+ nTotalUnits + " enemy "+nTotalEnemy);
-            if( nTotalEnemy > 800)
-            {
-                int nToKill = nTotalEnemy - 780;
-                Call.sendMessage("敌人人数超过800，可能造成卡顿，随机杀掉敌人单位");
-                for(int i=0;i<nToKill;)
-                {
-                    for(Team it: Team.all )
-                    {
-                        //Log.info("Try team" + it);
-                        if( it != Team.sharded && it.data().units.size > 0) {
-                            Unit u = it.data().units.random();
-                            if ( u != null) {
-                                //Log.info("Killing "+ u);
-                                u.kill();
-                                ++i; // it may stuck the system when enemy count significantly drop. but it will not happen. i think.
+                int nOurUnits = Team.sharded.data().units.size;
+                int nTotalEnemy = nTotalUnits - nOurUnits;
+                //Log.info("Total "+ nTotalUnits + " enemy "+nTotalEnemy);
+                if (nTotalEnemy > 800) {
+                    int nToKill = nTotalEnemy - 780;
+                    Call.sendMessage("敌人人数超过800，可能造成卡顿，随机杀掉敌人单位");
+                    for (int i = 0; i < nToKill; ) {
+                        for (Team it : Team.all) {
+                            //Log.info("Try team" + it);
+                            if (it != Team.sharded && it.data().units.size > 0) {
+                                Unit u = it.data().units.random();
+                                if (u != null) {
+                                    //Log.info("Killing "+ u);
+                                    u.kill();
+                                    ++i; // it may stuck the system when enemy count significantly drop. but it will not happen. i think.
+                                }
                             }
                         }
                     }
                 }
             }
+            // end of check enemy count
         }
-        // end of check enemy count
 
         Time.runTask(60f, ()-> TimeTask());
     }
@@ -137,6 +140,8 @@ public class MTDUtilPlugin extends Plugin{
 
         // register time.
         Time.runTask(60f, ()-> TimeTask());
+
+
 
         // dirty words mask functions.
         this.reloadWords();
@@ -213,14 +218,57 @@ public class MTDUtilPlugin extends Plugin{
             Blocks.itemSource.replaceable = false;
             Blocks.liquidSource.replaceable = false;
             Blocks.powerSource.replaceable = false;
+
+
+            // disable if too many factory
+            // seems not work? the factory count seems not right.
+
         });
 
+        Events.on(UnitUnloadEvent.class, event ->{
+            Team theTeam = event.unit.team;
+            if( theTeam != Team.sharded)
+            {
+                if(theTeam.data().units.size > 800)
+                {
+                    event.unit.kill();
+                    if(theTeam.data().units.size > 2000) {
+
+                    }
+                }
+            }
+        });
+        Events.on(UnitCreateEvent.class, event ->{
+
+            int nTotalUnits = 0;
+            for(Team it: Team.all )
+            {
+                if( it != Team.sharded) {
+                    nTotalUnits += it.data().units.size;
+                }
+            }
+            //Log.info("UnitCreateEvent at "+nTotalUnits);
+            if( nTotalUnits > 800) {
+                if (event.unit.team != Team.sharded) {
+                    event.unit.kill();
+                }
+            }
+        });
     }
 
+
+    public void callCmd(String[] args)
+    {
+        if( args.length >=1)
+        {
+            //Vars.netServer.
+        }
+    }
 
     @Override
     public void registerServerCommands(CommandHandler handler){
         handler.register("reloadwordmask", "Reload word mask in config/DirtyWords.txt.", args -> this.reloadWords());
+        handler.register("call", "call other cmd", args -> this.callCmd(args));
     }
 
     /*
