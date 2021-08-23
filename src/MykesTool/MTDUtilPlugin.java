@@ -25,6 +25,7 @@ import java.util.List;
 
 public class MTDUtilPlugin extends Plugin{
 
+    private final static int ENEMY_UNIT_LIMIT = 1500;
     private String[] arrayDirtyWords = DirtyWords.GetDefaultWords();
     private List<String> ListDirtyWordsExt = new ArrayList<>();
     private final String m_strLogPrefix = "[MykesTool] ";
@@ -94,9 +95,9 @@ public class MTDUtilPlugin extends Plugin{
                 int nOurUnits = Team.sharded.data().units.size;
                 int nTotalEnemy = nTotalUnits - nOurUnits;
                 //Log.info("Total "+ nTotalUnits + " enemy "+nTotalEnemy);
-                if (nTotalEnemy > 800) {
-                    int nToKill = nTotalEnemy - 780;
-                    Call.sendMessage("敌人人数超过800，可能造成卡顿，随机杀掉敌人单位");
+                if (nTotalEnemy > ENEMY_UNIT_LIMIT) {
+                    int nToKill = nTotalEnemy - ENEMY_UNIT_LIMIT + 20;
+                    Call.sendMessage("敌人人数超过"+ENEMY_UNIT_LIMIT +"，可能造成卡顿，随机杀掉敌人单位");
                     for (int i = 0; i < nToKill; ) {
                         for (Team it : Team.all) {
                             //Log.info("Try team" + it);
@@ -229,7 +230,7 @@ public class MTDUtilPlugin extends Plugin{
             Team theTeam = event.unit.team;
             if( theTeam != Team.sharded)
             {
-                if(theTeam.data().units.size > 800)
+                if(theTeam.data().units.size > ENEMY_UNIT_LIMIT)
                 {
                     event.unit.kill();
                     if(theTeam.data().units.size > 2000) {
@@ -248,7 +249,7 @@ public class MTDUtilPlugin extends Plugin{
                 }
             }
             //Log.info("UnitCreateEvent at "+nTotalUnits);
-            if( nTotalUnits > 800) {
+            if( nTotalUnits > ENEMY_UNIT_LIMIT) {
                 if (event.unit.team != Team.sharded) {
                     event.unit.kill();
                 }
